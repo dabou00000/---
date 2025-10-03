@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة اشتراكات الكهرباء</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="print.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>نظام إدارة اشتراكات الكهرباء</h1>
+                <p>تسجيل الدخول</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="email">اسم المستخدم</label>
+                    <input type="text" id="email" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">دخول</button>
+            </form>
+            <div id="login-error" class="error-message"></div>
+            <div class="login-info" style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; text-align: center;">
+                <p><strong>بيانات الدخول:</strong></p>
+                <p>اسم المستخدم: <code>admin</code></p>
+                <p>كلمة المرور: <code>admin123</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div id="app-screen" class="screen">
+        <!-- شريط التنقل -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2 id="tenant-name">اشتراك الكهرباء</h2>
+            </div>
+            <button id="logout-btn" class="btn btn-secondary">خروج</button>
+        </nav>
+
+        <!-- التبويبات -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="customers">الزبائن</button>
+            <button class="tab-btn" data-tab="invoices">الفواتير</button>
+            <button class="tab-btn" data-tab="history">السجلات</button>
+            <button class="tab-btn" data-tab="reports">التقارير</button>
+            <button class="tab-btn" data-tab="expenses">المصاريف</button>
+            <button class="tab-btn" data-tab="settings">الإعدادات</button>
+        </div>
+
+        <!-- محتوى التبويبات -->
+        <div class="tab-content">
+            <!-- تبويب الزبائن -->
+            <div id="customers-tab" class="tab-panel active">
+                <div class="panel-header">
+                    <h3>إدارة الزبائن</h3>
+                    <button id="add-customer-btn" class="btn btn-primary">إضافة زبون جديد</button>
+                </div>
+                <div class="filters">
+                    <div class="search-box">
+                        <input type="text" id="customer-search" placeholder="البحث بالاسم أو الهاتف...">
+                    </div>
+                    <select id="customer-status-filter">
+                        <option value="">جميع الزبائن</option>
+                        <option value="active">نشط</option>
+                        <option value="inactive">متوقف</option>
+                    </select>
+                </div>
+                <div id="customers-list" class="list-container">
+                    <div class="list-item">
+                        <p>لا يوجد زبائن بعد. اضغط "إضافة زبون جديد" لبدء العمل.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب الفواتير -->
+            <div id="invoices-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h3>إصدار الفواتير</h3>
+                    <button id="add-invoice-btn" class="btn btn-primary">إصدار فاتورة جديدة</button>
+                </div>
+                <div class="filters">
+                    <select id="invoice-period-filter">
+                        <option value="">جميع الأشهر</option>
+                    </select>
+                    <select id="invoice-customer-filter">
+                        <option value="">جميع الزبائن</option>
+                    </select>
+                </div>
+                <div id="invoices-list" class="list-container">
+                    <div class="list-item">
+                        <p>لا توجد فواتير بعد. اضغط "إصدار فاتورة جديدة" لبدء العمل.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب السجلات -->
+            <div id="history-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h3>السجلات التاريخية</h3>
+                </div>
+                <div class="filters">
+                    <select id="history-customer-filter">
+                        <option value="">جميع الزبائن</option>
+                    </select>
+                    <select id="history-year-filter">
+                        <option value="">جميع السنوات</option>
+                    </select>
+                    <select id="history-month-filter">
+                        <option value="">جميع الأشهر</option>
+                    </select>
+                </div>
+                <div id="history-list" class="list-container">
+                    <div class="list-item">
+                        <p>لا توجد سجلات بعد.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب التقارير -->
+            <div id="reports-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h3>التقارير الشهرية</h3>
+                </div>
+                <div class="report-filters">
+                    <select id="report-year">
+                        <option value="">اختر السنة</option>
+                    </select>
+                    <select id="report-month">
+                        <option value="">اختر الشهر</option>
+                    </select>
+                    <button id="generate-report-btn" class="btn btn-primary">عرض التقرير</button>
+                    <button id="export-report-btn" class="btn btn-secondary">تصدير Excel</button>
+                </div>
+                <div id="report-content" class="report-content">
+                    <p>اختر السنة والشهر لعرض التقرير.</p>
+                </div>
+            </div>
+
+            <!-- تبويب المصاريف -->
+            <div id="expenses-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h3>إدارة المصاريف</h3>
+                    <button id="add-expense-btn" class="btn btn-primary">إضافة مصروف</button>
+                </div>
+                <div class="expense-filters">
+                    <select id="expense-period-filter">
+                        <option value="">جميع الأشهر</option>
+                    </select>
+                    <select id="expense-type-filter">
+                        <option value="">جميع الأنواع</option>
+                        <option value="DIESEL">مازوت</option>
+                        <option value="MAINTENANCE">صيانة</option>
+                        <option value="OTHER">أخرى</option>
+                    </select>
+                </div>
+                <div id="expenses-list" class="list-container">
+                    <div class="list-item">
+                        <p>لا توجد مصاريف بعد. اضغط "إضافة مصروف" لبدء العمل.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب الإعدادات -->
+            <div id="settings-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h3>الإعدادات العامة</h3>
+                </div>
+                <form id="settings-form" class="settings-form">
+                    <div class="form-section">
+                        <h4>بيانات الاشتراك</h4>
+                        <div class="form-group">
+                            <label for="tenant-name-input">اسم الاشتراك</label>
+                            <input type="text" id="tenant-name-input" value="اشتراك كهرباء الضيعة" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tenant-address">العنوان</label>
+                            <input type="text" id="tenant-address" placeholder="أدخل عنوان الاشتراك">
+                        </div>
+                        <div class="form-group">
+                            <label for="tenant-phone">رقم الهاتف</label>
+                            <input type="tel" id="tenant-phone" placeholder="أدخل رقم الهاتف">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>الإعدادات المالية</h4>
+                        <div class="form-group">
+                            <label for="default-currency">العملة الرئيسية</label>
+                            <select id="default-currency">
+                                <option value="USD">دولار أمريكي</option>
+                                <option value="LBP">ليرة لبنانية</option>
+                                <option value="DUAL">ثنائي</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exchange-rate">سعر الصرف (USD → LBP)</label>
+                            <input type="number" id="exchange-rate" value="90000" min="1" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="default-price-usd">سعر الكيلو الافتراضي (USD)</label>
+                            <input type="number" id="default-price-usd" value="0.45" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="default-price-lbp">سعر الكيلو الافتراضي (LBP)</label>
+                            <input type="number" id="default-price-lbp" value="40000" min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="default-subscription">الاشتراك الشهري الافتراضي (USD)</label>
+                            <input type="number" id="default-subscription" value="6" min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>إعدادات الطباعة</h4>
+                        <div class="form-group">
+                            <label for="print-template">قالب الطباعة</label>
+                            <select id="print-template">
+                                <option value="A5" selected>A5</option>
+                                <option value="THERMAL_80">80mm حراري</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة/تعديل زبون -->
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customer-modal-title">إضافة زبون جديد</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="customer-form">
+                <div class="form-group">
+                    <label for="customer-name">الاسم الكامل *</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer-address">العنوان (حي - شارع - تفاصيل)</label>
+                    <textarea id="customer-address" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="customer-phone">رقم الهاتف</label>
+                    <input type="tel" id="customer-phone">
+                </div>
+                <div class="form-group">
+                    <label for="customer-subscription">الاشتراك الشهري (USD)</label>
+                    <input type="number" id="customer-subscription" min="0" step="0.01" value="6">
+                </div>
+                <div class="form-group">
+                    <label for="customer-price-usd">سعر الكيلو الخاص (USD)</label>
+                    <input type="number" id="customer-price-usd" min="0" step="0.01" value="0.45">
+                </div>
+                <div class="form-group">
+                    <label for="customer-price-lbp">سعر الكيلو الخاص (LBP)</label>
+                    <input type="number" id="customer-price-lbp" min="0" step="1" value="40000">
+                </div>
+                <div class="form-group">
+                    <label for="customer-status">الحالة</label>
+                    <select id="customer-status">
+                        <option value="active">نشط</option>
+                        <option value="inactive">متوقف</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary close-btn">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إصدار فاتورة -->
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="invoice-modal-title">إصدار فاتورة جديدة</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="invoice-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="invoice-customer">الزبون *</label>
+                        <select id="invoice-customer" required>
+                            <option value="">اختر الزبون</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-period">الشهر *</label>
+                        <input type="month" id="invoice-period" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="meter-previous">العداد السابق *</label>
+                        <input type="number" id="meter-previous" min="0" step="0.01" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="meter-current">العداد الحالي *</label>
+                        <input type="number" id="meter-current" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="consumption-display">
+                    <strong>الاستهلاك: <span id="consumption-display">0</span> كيلو واط</strong>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price-per-kwh-usd">سعر الكيلو (USD)</label>
+                        <input type="number" id="price-per-kwh-usd" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="price-per-kwh-lbp">سعر الكيلو (LBP)</label>
+                        <input type="number" id="price-per-kwh-lbp" min="0" step="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="fixed-fee">الاشتراك الشهري (USD)</label>
+                    <input type="number" id="fixed-fee" min="0" step="0.01">
+                </div>
+
+                <div class="extras-section">
+                    <h4>دفعات إضافية</h4>
+                    <div id="extras-list"></div>
+                    <button type="button" id="add-extra-btn" class="btn btn-secondary">إضافة دفعة</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="discount-amount">خصم (USD)</label>
+                    <input type="number" id="discount-amount" min="0" step="0.01" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="invoice-note">ملاحظات</label>
+                    <textarea id="invoice-note" rows="3"></textarea>
+                </div>
+
+                <div class="calculation-summary">
+                    <h4>ملخص الحسابات</h4>
+                    <div id="calculation-results"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary close-btn">إلغاء</button>
+                    <button type="button" id="calculate-btn" class="btn btn-secondary">حساب</button>
+                    <button type="submit" class="btn btn-primary">حفظ وإصدار</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مصروف -->
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>إضافة مصروف جديد</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="expense-period">الشهر *</label>
+                    <input type="month" id="expense-period" required>
+                </div>
+                <div class="form-group">
+                    <label for="expense-type">نوع المصروف</label>
+                    <select id="expense-type">
+                        <option value="DIESEL">مازوت</option>
+                        <option value="MAINTENANCE">صيانة</option>
+                        <option value="OTHER">أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="expense-label">وصف المصروف</label>
+                    <input type="text" id="expense-label">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-amount">المبلغ *</label>
+                        <input type="number" id="expense-amount" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-currency">العملة</label>
+                        <select id="expense-currency">
+                            <option value="USD">دولار أمريكي</option>
+                            <option value="LBP">ليرة لبنانية</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary close-btn">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة طباعة الفاتورة -->
+    <div id="print-modal" class="modal">
+        <div class="modal-content print-content">
+            <div class="modal-header">
+                <h3>معاينة الفاتورة</h3>
+                <div class="print-actions">
+                    <button id="print-btn" class="btn btn-primary">طباعة</button>
+                    <button class="close-btn">&times;</button>
+                </div>
+            </div>
+            <div id="invoice-preview" class="invoice-preview"></div>
+        </div>
+    </div>
+
+    <!-- رسائل التنبيه -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- التطبيق -->
+    <script src="app.js"></script>
+    <script src="app-invoices.js"></script>
+    <script src="app-expenses-reports.js"></script>
+    <script src="app-ui-enhancements.js"></script>
+</body>
+</html>
