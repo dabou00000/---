@@ -1,0 +1,365 @@
+/* تنسيقات الطباعة */
+@media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    body {
+        font-family: 'Noto Kufi Arabic', Arial, sans-serif;
+        direction: rtl;
+        text-align: right;
+        margin: 0;
+        padding: 0;
+        background: white;
+        color: black;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    /* إخفاء العناصر غير المرغوب فيها */
+    .navbar,
+    .tabs,
+    .filters,
+    .panel-header,
+    .list-item-actions,
+    .modal-actions,
+    .print-actions,
+    .close-btn,
+    .btn,
+    .toast-container,
+    .login-screen,
+    .tab-content > *:not(.active) {
+        display: none !important;
+    }
+
+    /* إظهار المحتوى المطلوب فقط */
+    .invoice-preview-content,
+    .invoice-preview-content * {
+        visibility: visible !important;
+    }
+
+    .invoice-preview-content {
+        position: static !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* تنسيق الفاتورة */
+    .invoice-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #333;
+        page-break-inside: avoid;
+    }
+
+    .invoice-header h2 {
+        font-size: 18px;
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+    }
+
+    .invoice-header p {
+        font-size: 12px;
+        margin: 2px 0;
+        color: #666;
+    }
+
+    .invoice-details {
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+    }
+
+    .invoice-details h3 {
+        font-size: 16px;
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    .invoice-info {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 3px;
+        margin: 8px 0;
+        font-size: 11px;
+    }
+
+    .invoice-info p {
+        margin: 3px 0;
+    }
+
+    .customer-info,
+    .meter-info,
+    .calculation-details {
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+    }
+
+    .customer-info h4,
+    .meter-info h4,
+    .calculation-details h4 {
+        font-size: 14px;
+        margin: 0 0 8px 0;
+        color: #2c3e50;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 3px;
+    }
+
+    .calculation-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 4px 0;
+        padding: 3px 0;
+        font-size: 11px;
+    }
+
+    .calculation-row.total {
+        border-top: 1px solid #333;
+        padding-top: 8px;
+        font-weight: bold;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .calculation-row.discount {
+        color: #e74c3c;
+    }
+
+    .invoice-note {
+        margin-top: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 3px;
+        page-break-inside: avoid;
+    }
+
+    .invoice-note h4 {
+        font-size: 12px;
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+    }
+
+    .invoice-note p {
+        font-size: 11px;
+        margin: 0;
+    }
+
+    /* تنسيقات خاصة للطابعات الحرارية */
+    @page {
+        margin: 0.5cm;
+        size: A5;
+    }
+
+    /* للطابعات الحرارية 80mm */
+    @media print and (max-width: 80mm) {
+        body {
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .invoice-header h2 {
+            font-size: 14px;
+        }
+
+        .invoice-details h3 {
+            font-size: 12px;
+        }
+
+        .customer-info h4,
+        .meter-info h4,
+        .calculation-details h4 {
+            font-size: 11px;
+        }
+
+        .calculation-row {
+            font-size: 9px;
+        }
+
+        .calculation-row.total {
+            font-size: 10px;
+        }
+
+        .invoice-info {
+            padding: 6px;
+            font-size: 9px;
+        }
+
+        .invoice-note {
+            padding: 6px;
+        }
+
+        .invoice-note h4 {
+            font-size: 10px;
+        }
+
+        .invoice-note p {
+            font-size: 9px;
+        }
+    }
+
+    /* للطابعات الحرارية 58mm */
+    @media print and (max-width: 58mm) {
+        body {
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .invoice-header h2 {
+            font-size: 12px;
+        }
+
+        .invoice-details h3 {
+            font-size: 10px;
+        }
+
+        .customer-info h4,
+        .meter-info h4,
+        .calculation-details h4 {
+            font-size: 9px;
+        }
+
+        .calculation-row {
+            font-size: 8px;
+        }
+
+        .calculation-row.total {
+            font-size: 9px;
+        }
+
+        .invoice-info {
+            padding: 4px;
+            font-size: 8px;
+        }
+
+        .invoice-note {
+            padding: 4px;
+        }
+
+        .invoice-note h4 {
+            font-size: 8px;
+        }
+
+        .invoice-note p {
+            font-size: 7px;
+        }
+    }
+
+    /* منع كسر الصفحة في العناصر المهمة */
+    .invoice-header,
+    .customer-info,
+    .meter-info,
+    .calculation-details {
+        page-break-inside: avoid;
+    }
+
+    /* تنسيق الأرقام والعملات */
+    .currency {
+        font-weight: bold;
+    }
+
+    /* تنسيق الجداول */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #ddd;
+        padding: 4px 6px;
+        text-align: right;
+        font-size: 10px;
+    }
+
+    table th {
+        background: #f8f9fa;
+        font-weight: bold;
+    }
+
+    /* تنسيق القوائم */
+    ul, ol {
+        margin: 5px 0;
+        padding-right: 20px;
+    }
+
+    li {
+        margin: 2px 0;
+        font-size: 10px;
+    }
+
+    /* تنسيق النصوص */
+    strong, b {
+        font-weight: bold;
+    }
+
+    em, i {
+        font-style: italic;
+    }
+
+    /* تنسيق الخطوط */
+    h1, h2, h3, h4, h5, h6 {
+        margin: 5px 0;
+        font-weight: bold;
+    }
+
+    p {
+        margin: 3px 0;
+    }
+
+    /* تنسيق المسافات */
+    .spacer {
+        height: 10px;
+    }
+
+    .divider {
+        border-top: 1px solid #ddd;
+        margin: 10px 0;
+    }
+
+    /* تنسيق التوقيعات */
+    .signature-area {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .signature-line {
+        border-bottom: 1px solid #333;
+        width: 200px;
+        margin: 10px auto;
+        height: 20px;
+    }
+
+    /* تنسيق الشعار */
+    .logo {
+        max-width: 100px;
+        max-height: 50px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    /* تنسيق الباركود */
+    .barcode {
+        text-align: center;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 8px;
+    }
+
+    /* تنسيق QR Code */
+    .qr-code {
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .qr-code img {
+        max-width: 80px;
+        max-height: 80px;
+    }
+}
