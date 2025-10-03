@@ -129,74 +129,16 @@ class ElectricitySubscriptionApp {
         });
 
         // إضافة فاتورة
-        document.getElementById('add-invoice-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log('Add invoice button clicked');
-            console.log('InvoiceManager available:', !!this.invoiceManager);
-            
-            // محاولة فتح النافذة مباشرة
-            const modal = document.getElementById('invoice-modal');
-            if (modal) {
-                // التحقق من وجود العناصر قبل تعيين القيم
-                const periodInput = document.getElementById('invoice-period');
-                const exchangeInput = document.getElementById('exchange-rate-override');
-                const customerSelect = document.getElementById('invoice-customer');
-                
-                console.log('Elements found:', {
-                    period: !!periodInput,
-                    exchange: !!exchangeInput,
-                    customer: !!customerSelect
-                });
-                
-                // تعيين القيم الافتراضية إذا كانت العناصر موجودة
-                if (periodInput) {
-                    const currentDate = new Date();
-                    const currentMonth = currentDate.getFullYear() + '-' + 
-                        String(currentDate.getMonth() + 1).padStart(2, '0');
-                    periodInput.value = currentMonth;
-                }
-                
-                if (exchangeInput) {
-                    exchangeInput.value = this.settings.exchangeRate || 90000;
-                }
-                
-                // تحديث قائمة الزبائن
-                if (customerSelect) {
-                    customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-                    this.customers.filter(c => c.status === 'active').forEach(customer => {
-                        const option = document.createElement('option');
-                        option.value = customer.id;
-                        option.textContent = customer.name;
-                        customerSelect.appendChild(option);
-                    });
-                }
-                
-                modal.classList.add('active');
-                console.log('Modal opened directly with default values');
-                
-                // تأخير صغير لضمان ظهور النافذة قبل تعيين القيم
-                setTimeout(() => {
-                    const periodInput = document.getElementById('invoice-period');
-                    const exchangeInput = document.getElementById('exchange-rate-override');
-                    
-                    if (periodInput && !periodInput.value) {
-                        const currentDate = new Date();
-                        const currentMonth = currentDate.getFullYear() + '-' + 
-                            String(currentDate.getMonth() + 1).padStart(2, '0');
-                        periodInput.value = currentMonth;
-                        console.log('Period set to:', currentMonth);
-                    }
-                    
-                    if (exchangeInput && !exchangeInput.value) {
-                        exchangeInput.value = this.settings.exchangeRate || 90000;
-                        console.log('Exchange rate set to:', this.settings.exchangeRate || 90000);
-                    }
-                }, 100);
-            } else {
-                console.error('Invoice modal not found');
-                this.showToast('خطأ في تحميل نافذة الفاتورة', 'error');
-            }
-        });
+        const addInvoiceBtn = document.getElementById('add-invoice-btn');
+        if (addInvoiceBtn) {
+            addInvoiceBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Add invoice button clicked');
+                this.showInvoiceModalSimple();
+            });
+        } else {
+            console.error('Add invoice button not found');
+        }
 
         // إضافة مصروف
         document.getElementById('add-expense-btn').addEventListener('click', () => {
@@ -277,10 +219,13 @@ class ElectricitySubscriptionApp {
         });
 
         // نموذج الفاتورة
-        document.getElementById('invoice-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveInvoice();
-        });
+        const invoiceForm = document.getElementById('invoice-form');
+        if (invoiceForm) {
+            invoiceForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveInvoiceSimple();
+            });
+        }
 
         // نموذج المصروف
         document.getElementById('expense-form').addEventListener('submit', (e) => {
@@ -294,12 +239,20 @@ class ElectricitySubscriptionApp {
         });
 
         // تغيير قراءات العداد
-        document.getElementById('meter-previous').addEventListener('input', () => {
-            this.calculateConsumption();
-        });
-        document.getElementById('meter-current').addEventListener('input', () => {
-            this.calculateConsumption();
-        });
+        const meterPrevious = document.getElementById('meter-previous');
+        const meterCurrent = document.getElementById('meter-current');
+        
+        if (meterPrevious) {
+            meterPrevious.addEventListener('input', () => {
+                this.calculateConsumption();
+            });
+        }
+        
+        if (meterCurrent) {
+            meterCurrent.addEventListener('input', () => {
+                this.calculateConsumption();
+            });
+        }
 
         // تغيير الزبون في الفاتورة
         document.getElementById('invoice-customer').addEventListener('change', () => {
@@ -831,6 +784,126 @@ class ElectricitySubscriptionApp {
             } else {
                 display.style.color = 'green';
             }
+        }
+    }
+
+    // دالة مبسطة لفتح نافذة الفاتورة
+    showInvoiceModalSimple() {
+        console.log('showInvoiceModalSimple called');
+        
+        // التحقق من وجود النافذة
+        const modal = document.getElementById('invoice-modal');
+        if (!modal) {
+            console.error('Invoice modal not found');
+            this.showToast('خطأ في تحميل نافذة الفاتورة', 'error');
+            return;
+        }
+
+        // فتح النافذة أولاً
+        modal.classList.add('active');
+        console.log('Modal opened');
+
+        // تعيين القيم بعد فتح النافذة
+        setTimeout(() => {
+            try {
+                // تعيين الشهر الحالي
+                const periodInput = document.getElementById('invoice-period');
+                if (periodInput) {
+                    const currentDate = new Date();
+                    const currentMonth = currentDate.getFullYear() + '-' + 
+                        String(currentDate.getMonth() + 1).padStart(2, '0');
+                    periodInput.value = currentMonth;
+                    console.log('Period set to:', currentMonth);
+                }
+
+                // تعيين سعر الصرف
+                const exchangeInput = document.getElementById('exchange-rate-override');
+                if (exchangeInput) {
+                    exchangeInput.value = this.settings.exchangeRate || 90000;
+                    console.log('Exchange rate set to:', this.settings.exchangeRate || 90000);
+                }
+
+                // تحديث قائمة الزبائن
+                const customerSelect = document.getElementById('invoice-customer');
+                if (customerSelect) {
+                    customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
+                    this.customers.filter(c => c.status === 'active').forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.id;
+                        option.textContent = customer.name;
+                        customerSelect.appendChild(option);
+                    });
+                    console.log('Customer list updated');
+                }
+
+                console.log('All values set successfully');
+            } catch (error) {
+                console.error('Error setting values:', error);
+            }
+        }, 200);
+    }
+
+    // دالة حفظ الفاتورة
+    saveInvoiceSimple() {
+        try {
+            const form = document.getElementById('invoice-form');
+            if (!form) {
+                this.showToast('خطأ في تحميل نموذج الفاتورة', 'error');
+                return;
+            }
+
+            // جمع البيانات
+            const invoiceData = {
+                customerId: document.getElementById('invoice-customer').value,
+                period: document.getElementById('invoice-period').value,
+                meterPrevious: parseFloat(document.getElementById('meter-previous').value) || 0,
+                meterCurrent: parseFloat(document.getElementById('meter-current').value) || 0,
+                consumption: parseFloat(document.getElementById('consumption-display').textContent) || 0,
+                pricePerKwh: parseFloat(document.getElementById('price-per-kwh').value) || 0,
+                monthlySubscription: parseFloat(document.getElementById('monthly-subscription').value) || 0,
+                additionalPayments: parseFloat(document.getElementById('additional-payments').value) || 0,
+                additionalPaymentsNote: document.getElementById('additional-payments-note').value,
+                discount: parseFloat(document.getElementById('discount').value) || 0,
+                discountNote: document.getElementById('discount-note').value,
+                exchangeRate: parseFloat(document.getElementById('exchange-rate-override').value) || 90000,
+                currencyMode: this.settings.defaultCurrencyMode || 'USD',
+                issuedAt: new Date().toISOString(),
+                createdBy: this.currentUser.uid
+            };
+
+            // التحقق من البيانات المطلوبة
+            if (!invoiceData.customerId) {
+                this.showToast('يرجى اختيار الزبون', 'error');
+                return;
+            }
+
+            if (!invoiceData.period) {
+                this.showToast('يرجى تحديد الشهر', 'error');
+                return;
+            }
+
+            // حساب المبلغ الإجمالي
+            const consumptionCost = invoiceData.consumption * invoiceData.pricePerKwh;
+            const totalAmount = consumptionCost + invoiceData.monthlySubscription + invoiceData.additionalPayments - invoiceData.discount;
+
+            invoiceData.consumptionCost = consumptionCost;
+            invoiceData.totalAmount = totalAmount;
+
+            // إضافة الفاتورة
+            invoiceData.id = 'invoice_' + Date.now();
+            invoiceData.createdAt = new Date().toISOString();
+            this.invoices.push(invoiceData);
+
+            // حفظ في LocalStorage
+            localStorage.setItem('invoices', JSON.stringify(this.invoices));
+
+            this.showToast('تم إضافة الفاتورة بنجاح', 'success');
+            this.closeModal(document.getElementById('invoice-modal'));
+            this.loadInvoices();
+
+        } catch (error) {
+            console.error('خطأ في حفظ الفاتورة:', error);
+            this.showToast('خطأ في حفظ الفاتورة', 'error');
         }
     }
 }
