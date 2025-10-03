@@ -497,9 +497,5 @@ const styleSheet = document.createElement('style');
 styleSheet.textContent = enhancementStyles;
 document.head.appendChild(styleSheet);
 
-// تهيئة التحسينات
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.app) {
-        window.app.uiEnhancements = new UIEnhancements(window.app);
-    }
-});
+// جعل الكلاس متاحاً في النطاق العام
+window.UIEnhancements = UIEnhancements;

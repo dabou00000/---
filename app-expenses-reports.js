@@ -392,9 +392,5 @@ class ExpensesReportsManager {
     }
 }
 
-// إضافة ExpensesReportsManager إلى التطبيق الرئيسي
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.app) {
-        window.app.expensesManager = new ExpensesReportsManager(window.app);
-    }
-});
+// جعل الكلاس متاحاً في النطاق العام
+window.ExpensesReportsManager = ExpensesReportsManager;

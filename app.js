@@ -125,7 +125,14 @@ class ElectricitySubscriptionApp {
 
         // إضافة فاتورة
         document.getElementById('add-invoice-btn').addEventListener('click', () => {
-            this.showInvoiceModal();
+            console.log('Add invoice button clicked');
+            console.log('InvoiceManager available:', !!this.invoiceManager);
+            if (this.invoiceManager) {
+                this.invoiceManager.showInvoiceModal();
+            } else {
+                console.error('InvoiceManager not initialized');
+                this.showToast('خطأ في تحميل نظام الفواتير', 'error');
+            }
         });
 
         // إضافة مصروف
@@ -682,6 +689,9 @@ class ElectricitySubscriptionApp {
     showInvoiceModal(invoice = null) {
         if (this.invoiceManager) {
             this.invoiceManager.showInvoiceModal(invoice);
+        } else {
+            console.error('InvoiceManager not available');
+            this.showToast('خطأ في تحميل نظام الفواتير', 'error');
         }
     }
 
@@ -745,4 +755,17 @@ class ElectricitySubscriptionApp {
 let app;
 document.addEventListener('DOMContentLoaded', () => {
     app = new ElectricitySubscriptionApp();
+    
+    // تهيئة المديرين بعد تحميل التطبيق
+    setTimeout(() => {
+        if (window.InvoiceManager) {
+            app.invoiceManager = new InvoiceManager(app);
+        }
+        if (window.ExpensesReportsManager) {
+            app.expensesManager = new ExpensesReportsManager(app);
+        }
+        if (window.UIEnhancements) {
+            app.uiEnhancements = new UIEnhancements(app);
+        }
+    }, 100);
 });

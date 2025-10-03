@@ -5,9 +5,18 @@ class InvoiceManager {
     }
 
     showInvoiceModal(invoice = null) {
+        console.log('showInvoiceModal called');
         const modal = document.getElementById('invoice-modal');
         const title = document.getElementById('invoice-modal-title');
         const form = document.getElementById('invoice-form');
+
+        console.log('Modal elements:', { modal: !!modal, title: !!title, form: !!form });
+
+        if (!modal || !title || !form) {
+            console.error('Invoice modal elements not found');
+            this.app.showToast('خطأ في تحميل نافذة الفاتورة', 'error');
+            return;
+        }
 
         // تحديث قائمة الزبائن
         this.updateCustomerSelect();
@@ -30,6 +39,7 @@ class InvoiceManager {
 
         this.calculateConsumption();
         modal.classList.add('active');
+        console.log('Invoice modal should be visible now');
     }
 
     updateCustomerSelect() {
@@ -590,9 +600,5 @@ class InvoiceManager {
     }
 }
 
-// إضافة InvoiceManager إلى التطبيق الرئيسي
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.app) {
-        window.app.invoiceManager = new InvoiceManager(window.app);
-    }
-});
+// جعل الكلاس متاحاً في النطاق العام
+window.InvoiceManager = InvoiceManager;
