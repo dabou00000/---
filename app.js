@@ -254,6 +254,43 @@ class ElectricitySubscriptionApp {
             });
         }
 
+        // ربط أحداث تحديث ملخص الحسابات
+        const pricePerKwh = document.getElementById('price-per-kwh');
+        const monthlySubscription = document.getElementById('monthly-subscription');
+        const additionalPayments = document.getElementById('additional-payments');
+        const discount = document.getElementById('discount');
+        const exchangeRate = document.getElementById('exchange-rate-override');
+
+        if (pricePerKwh) {
+            pricePerKwh.addEventListener('input', () => {
+                this.updateInvoiceSummary();
+            });
+        }
+
+        if (monthlySubscription) {
+            monthlySubscription.addEventListener('input', () => {
+                this.updateInvoiceSummary();
+            });
+        }
+
+        if (additionalPayments) {
+            additionalPayments.addEventListener('input', () => {
+                this.updateInvoiceSummary();
+            });
+        }
+
+        if (discount) {
+            discount.addEventListener('input', () => {
+                this.updateInvoiceSummary();
+            });
+        }
+
+        if (exchangeRate) {
+            exchangeRate.addEventListener('input', () => {
+                this.updateInvoiceSummary();
+            });
+        }
+
         // تغيير الزبون في الفاتورة
         document.getElementById('invoice-customer').addEventListener('change', () => {
             this.updateCustomerData();
@@ -808,6 +845,58 @@ class ElectricitySubscriptionApp {
                 display.style.color = 'green';
             }
         }
+        
+        // تحديث ملخص الحسابات
+        this.updateInvoiceSummary();
+    }
+
+    // دالة تحديث ملخص الحسابات
+    updateInvoiceSummary() {
+        try {
+            // جمع البيانات
+            const consumption = parseFloat(document.getElementById('consumption-display').textContent) || 0;
+            const pricePerKwh = parseFloat(document.getElementById('price-per-kwh').value) || 0;
+            const monthlySubscription = parseFloat(document.getElementById('monthly-subscription').value) || 0;
+            const additionalPayments = parseFloat(document.getElementById('additional-payments').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const exchangeRate = parseFloat(document.getElementById('exchange-rate-override').value) || 90000;
+
+            // حساب التكاليف
+            const energyCost = consumption * pricePerKwh;
+            const subtotal = energyCost + monthlySubscription + additionalPayments;
+            const finalTotal = subtotal - discount;
+            const finalTotalLbp = finalTotal * exchangeRate;
+
+            // تحديث العرض
+            const energyCostDisplay = document.getElementById('energy-cost-display');
+            const subtotalDisplay = document.getElementById('subtotal-display');
+            const finalTotalUsdDisplay = document.getElementById('final-total-usd-display');
+            const finalTotalLbpDisplay = document.getElementById('final-total-lbp-display');
+
+            if (energyCostDisplay) {
+                energyCostDisplay.textContent = energyCost.toFixed(2) + '$';
+            }
+            if (subtotalDisplay) {
+                subtotalDisplay.textContent = subtotal.toFixed(2) + '$';
+            }
+            if (finalTotalUsdDisplay) {
+                finalTotalUsdDisplay.textContent = finalTotal.toFixed(2) + '$';
+            }
+            if (finalTotalLbpDisplay) {
+                finalTotalLbpDisplay.textContent = finalTotalLbp.toLocaleString() + ' ل.ل';
+            }
+
+            console.log('Invoice summary updated:', {
+                consumption,
+                energyCost,
+                subtotal,
+                finalTotal,
+                finalTotalLbp
+            });
+
+        } catch (error) {
+            console.error('Error updating invoice summary:', error);
+        }
     }
 
     // دالة مبسطة لفتح نافذة الفاتورة
@@ -860,6 +949,9 @@ class ElectricitySubscriptionApp {
                 }
 
                 console.log('All values set successfully');
+
+                // تحديث ملخص الحسابات
+                this.updateInvoiceSummary();
             } catch (error) {
                 console.error('Error setting values:', error);
             }
