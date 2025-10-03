@@ -853,13 +853,37 @@ class ElectricitySubscriptionApp {
     // دالة تحديث ملخص الحسابات
     updateInvoiceSummary() {
         try {
-            // جمع البيانات
-            const consumption = parseFloat(document.getElementById('consumption-display').textContent) || 0;
-            const pricePerKwh = parseFloat(document.getElementById('price-per-kwh').value) || 0;
-            const monthlySubscription = parseFloat(document.getElementById('monthly-subscription').value) || 0;
-            const additionalPayments = parseFloat(document.getElementById('additional-payments').value) || 0;
-            const discount = parseFloat(document.getElementById('discount').value) || 0;
-            const exchangeRate = parseFloat(document.getElementById('exchange-rate-override').value) || 90000;
+            // دالة مساعدة للحصول على القيم بأمان
+            const getValue = (id, isTextContent = false) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (isTextContent) {
+                        return parseFloat(element.textContent) || 0;
+                    } else {
+                        return parseFloat(element.value) || 0;
+                    }
+                }
+                console.warn(`Element with ID '${id}' not found`);
+                return 0;
+            };
+
+            // دالة مساعدة لتحديث النص بأمان
+            const setText = (id, value, suffix = '') => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value + suffix;
+                } else {
+                    console.warn(`Element with ID '${id}' not found for text update`);
+                }
+            };
+
+            // جمع البيانات بأمان
+            const consumption = getValue('consumption-display', true);
+            const pricePerKwh = getValue('price-per-kwh');
+            const monthlySubscription = getValue('monthly-subscription');
+            const additionalPayments = getValue('additional-payments');
+            const discount = getValue('discount');
+            const exchangeRate = getValue('exchange-rate-override') || 90000;
 
             // حساب التكاليف
             const energyCost = consumption * pricePerKwh;
@@ -867,26 +891,13 @@ class ElectricitySubscriptionApp {
             const finalTotal = subtotal - discount;
             const finalTotalLbp = finalTotal * exchangeRate;
 
-            // تحديث العرض
-            const energyCostDisplay = document.getElementById('energy-cost-display');
-            const subtotalDisplay = document.getElementById('subtotal-display');
-            const finalTotalUsdDisplay = document.getElementById('final-total-usd-display');
-            const finalTotalLbpDisplay = document.getElementById('final-total-lbp-display');
+            // تحديث العرض بأمان
+            setText('energy-cost-display', energyCost.toFixed(2), '$');
+            setText('subtotal-display', subtotal.toFixed(2), '$');
+            setText('final-total-usd-display', finalTotal.toFixed(2), '$');
+            setText('final-total-lbp-display', finalTotalLbp.toLocaleString(), ' ل.ل');
 
-            if (energyCostDisplay) {
-                energyCostDisplay.textContent = energyCost.toFixed(2) + '$';
-            }
-            if (subtotalDisplay) {
-                subtotalDisplay.textContent = subtotal.toFixed(2) + '$';
-            }
-            if (finalTotalUsdDisplay) {
-                finalTotalUsdDisplay.textContent = finalTotal.toFixed(2) + '$';
-            }
-            if (finalTotalLbpDisplay) {
-                finalTotalLbpDisplay.textContent = finalTotalLbp.toLocaleString() + ' ل.ل';
-            }
-
-            console.log('Invoice summary updated:', {
+            console.log('Invoice summary updated successfully:', {
                 consumption,
                 energyCost,
                 subtotal,
@@ -967,47 +978,39 @@ class ElectricitySubscriptionApp {
                 return;
             }
 
-            // التحقق من وجود العناصر قبل قراءة القيم
-            const customerElement = document.getElementById('invoice-customer');
-            const periodElement = document.getElementById('invoice-period');
-            const meterPreviousElement = document.getElementById('meter-previous');
-            const meterCurrentElement = document.getElementById('meter-current');
-            const consumptionElement = document.getElementById('consumption-display');
-            const pricePerKwhElement = document.getElementById('price-per-kwh');
-            const monthlySubscriptionElement = document.getElementById('monthly-subscription');
-            const additionalPaymentsElement = document.getElementById('additional-payments');
-            const additionalPaymentsNoteElement = document.getElementById('additional-payments-note');
-            const discountElement = document.getElementById('discount');
-            const discountNoteElement = document.getElementById('discount-note');
-            const exchangeRateElement = document.getElementById('exchange-rate-override');
+            // دالة مساعدة للحصول على القيم بأمان
+            const getValue = (id, isTextContent = false) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (isTextContent) {
+                        return parseFloat(element.textContent) || 0;
+                    } else {
+                        return parseFloat(element.value) || 0;
+                    }
+                }
+                console.warn(`Element with ID '${id}' not found for saving`);
+                return 0;
+            };
 
-            console.log('Elements found:', {
-                customer: !!customerElement,
-                period: !!periodElement,
-                meterPrevious: !!meterPreviousElement,
-                meterCurrent: !!meterCurrentElement,
-                consumption: !!consumptionElement,
-                pricePerKwh: !!pricePerKwhElement,
-                monthlySubscription: !!monthlySubscriptionElement,
-                additionalPayments: !!additionalPaymentsElement,
-                discount: !!discountElement,
-                exchangeRate: !!exchangeRateElement
-            });
+            const getStringValue = (id) => {
+                const element = document.getElementById(id);
+                return element ? element.value : '';
+            };
 
-            // جمع البيانات مع التحقق من وجود العناصر
+            // جمع البيانات بأمان
             const invoiceData = {
-                customerId: customerElement ? customerElement.value : '',
-                period: periodElement ? periodElement.value : '',
-                meterPrevious: parseFloat(meterPreviousElement ? meterPreviousElement.value : 0) || 0,
-                meterCurrent: parseFloat(meterCurrentElement ? meterCurrentElement.value : 0) || 0,
-                consumption: parseFloat(consumptionElement ? consumptionElement.textContent : 0) || 0,
-                pricePerKwh: parseFloat(pricePerKwhElement ? pricePerKwhElement.value : 0) || 0,
-                monthlySubscription: parseFloat(monthlySubscriptionElement ? monthlySubscriptionElement.value : 0) || 0,
-                additionalPayments: parseFloat(additionalPaymentsElement ? additionalPaymentsElement.value : 0) || 0,
-                additionalPaymentsNote: additionalPaymentsNoteElement ? additionalPaymentsNoteElement.value : '',
-                discount: parseFloat(discountElement ? discountElement.value : 0) || 0,
-                discountNote: discountNoteElement ? discountNoteElement.value : '',
-                exchangeRate: parseFloat(exchangeRateElement ? exchangeRateElement.value : 90000) || 90000,
+                customerId: getStringValue('invoice-customer'),
+                period: getStringValue('invoice-period'),
+                meterPrevious: getValue('meter-previous'),
+                meterCurrent: getValue('meter-current'),
+                consumption: getValue('consumption-display', true),
+                pricePerKwh: getValue('price-per-kwh'),
+                monthlySubscription: getValue('monthly-subscription'),
+                additionalPayments: getValue('additional-payments'),
+                additionalPaymentsNote: getStringValue('additional-payments-note'),
+                discount: getValue('discount'),
+                discountNote: getStringValue('discount-note'),
+                exchangeRate: getValue('exchange-rate-override') || 90000,
                 currencyMode: this.settings.defaultCurrencyMode || 'USD',
                 issuedAt: new Date().toISOString(),
                 createdBy: this.currentUser ? this.currentUser.uid : 'admin'
