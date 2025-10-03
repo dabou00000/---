@@ -382,31 +382,15 @@ class ElectricitySubscriptionApp {
     }
 
     showCustomerModal(customer = null) {
+        console.log('showCustomerModal called');
         const modal = document.getElementById('customer-modal');
-        const title = document.getElementById('customer-modal-title');
-        const form = document.getElementById('customer-form');
-
-        if (customer) {
-            title.textContent = 'تعديل الزبون';
-            document.getElementById('customer-name').value = customer.name || '';
-            document.getElementById('customer-address').value = customer.address || '';
-            document.getElementById('customer-phone').value = customer.phone || '';
-            document.getElementById('customer-subscription').value = customer.subscription || this.settings.defaultSubscription;
-            document.getElementById('customer-price-usd').value = customer.priceUsd || this.settings.defaultPriceUsd;
-            document.getElementById('customer-price-lbp').value = customer.priceLbp || this.settings.defaultPriceLbp;
-            document.getElementById('customer-status').value = customer.status || 'active';
-            form.dataset.customerId = customer.id;
+        if (modal) {
+            modal.classList.add('active');
+            console.log('Customer modal opened');
         } else {
-            title.textContent = 'إضافة زبون جديد';
-            form.reset();
-            // تعيين القيم الافتراضية
-            document.getElementById('customer-subscription').value = this.settings.defaultSubscription;
-            document.getElementById('customer-price-usd').value = this.settings.defaultPriceUsd;
-            document.getElementById('customer-price-lbp').value = this.settings.defaultPriceLbp;
-            delete form.dataset.customerId;
+            console.error('Customer modal not found');
+            this.showToast('خطأ في تحميل نافذة الزبون', 'error');
         }
-
-        modal.classList.add('active');
     }
 
     async saveCustomer() {
@@ -753,21 +737,60 @@ class ElectricitySubscriptionApp {
 
     // وظائف المصاريف
     showExpenseModal(expense = null) {
-        if (this.expensesManager) {
-            this.expensesManager.showExpenseModal(expense);
+        console.log('showExpenseModal called');
+        const modal = document.getElementById('expense-modal');
+        if (modal) {
+            modal.classList.add('active');
+            console.log('Expense modal opened');
+        } else {
+            console.error('Expense modal not found');
+            this.showToast('خطأ في تحميل نافذة المصاريف', 'error');
         }
     }
 
     saveExpense() {
-        if (this.expensesManager) {
-            this.expensesManager.saveExpense();
+        try {
+            const form = document.getElementById('expense-form');
+            if (!form) {
+                this.showToast('خطأ في تحميل نموذج المصروف', 'error');
+                return;
+            }
+
+            const expenseData = {
+                type: document.getElementById('expense-type').value,
+                amount: parseFloat(document.getElementById('expense-amount').value) || 0,
+                note: document.getElementById('expense-note').value,
+                date: document.getElementById('expense-date').value,
+                createdAt: new Date().toISOString()
+            };
+
+            if (!expenseData.type) {
+                this.showToast('يرجى تحديد نوع المصروف', 'error');
+                return;
+            }
+
+            if (expenseData.amount <= 0) {
+                this.showToast('يرجى إدخال مبلغ صحيح', 'error');
+                return;
+            }
+
+            expenseData.id = 'expense_' + Date.now();
+            this.expenses.push(expenseData);
+            localStorage.setItem('expenses', JSON.stringify(this.expenses));
+
+            this.showToast('تم إضافة المصروف بنجاح', 'success');
+            this.closeModal(document.getElementById('expense-modal'));
+            this.loadExpenses();
+
+        } catch (error) {
+            console.error('خطأ في حفظ المصروف:', error);
+            this.showToast('خطأ في حفظ المصروف', 'error');
         }
     }
 
     updateExpenseType(type) {
-        if (this.expensesManager) {
-            this.expensesManager.updateExpenseType(type);
-        }
+        // دالة مبسطة لتحديث نوع المصروف
+        console.log('Expense type updated to:', type);
     }
 
     // دالة حساب الاستهلاك
