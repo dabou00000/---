@@ -106,6 +106,11 @@ class ElectricitySubscriptionApp {
             emailInput.setAttribute('novalidate', 'true');
         }
 
+        // التحقق من وجود العناصر
+        console.log('Setting up event listeners...');
+        console.log('Add invoice button exists:', !!document.getElementById('add-invoice-btn'));
+        console.log('Invoice modal exists:', !!document.getElementById('invoice-modal'));
+
         // الخروج
         document.getElementById('logout-btn').addEventListener('click', () => {
             this.handleLogout();
@@ -124,14 +129,36 @@ class ElectricitySubscriptionApp {
         });
 
         // إضافة فاتورة
-        document.getElementById('add-invoice-btn').addEventListener('click', () => {
+        document.getElementById('add-invoice-btn').addEventListener('click', (e) => {
+            e.preventDefault();
             console.log('Add invoice button clicked');
             console.log('InvoiceManager available:', !!this.invoiceManager);
-            if (this.invoiceManager) {
-                this.invoiceManager.showInvoiceModal();
+            
+            // محاولة فتح النافذة مباشرة
+            const modal = document.getElementById('invoice-modal');
+            if (modal) {
+                // تعيين القيم الافتراضية
+                const currentDate = new Date();
+                const currentMonth = currentDate.getFullYear() + '-' + 
+                    String(currentDate.getMonth() + 1).padStart(2, '0');
+                document.getElementById('invoice-period').value = currentMonth;
+                document.getElementById('exchange-rate-override').value = this.settings.exchangeRate || 90000;
+                
+                // تحديث قائمة الزبائن
+                const customerSelect = document.getElementById('invoice-customer');
+                customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
+                this.customers.filter(c => c.status === 'active').forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.id;
+                    option.textContent = customer.name;
+                    customerSelect.appendChild(option);
+                });
+                
+                modal.classList.add('active');
+                console.log('Modal opened directly with default values');
             } else {
-                console.error('InvoiceManager not initialized');
-                this.showToast('خطأ في تحميل نظام الفواتير', 'error');
+                console.error('Invoice modal not found');
+                this.showToast('خطأ في تحميل نافذة الفاتورة', 'error');
             }
         });
 
@@ -200,6 +227,10 @@ class ElectricitySubscriptionApp {
 
         // النوافذ المنبثقة
         this.setupModalEventListeners();
+        
+        // التحقق من ربط الأحداث
+        console.log('Event listeners setup completed');
+        console.log('Invoice button event listener attached:', !!document.getElementById('add-invoice-btn').onclick);
     }
 
     setupModalEventListeners() {
@@ -747,6 +778,23 @@ class ElectricitySubscriptionApp {
     updateExpenseType(type) {
         if (this.expensesManager) {
             this.expensesManager.updateExpenseType(type);
+        }
+    }
+
+    // دالة حساب الاستهلاك
+    calculateConsumption() {
+        const previous = parseFloat(document.getElementById('meter-previous').value) || 0;
+        const current = parseFloat(document.getElementById('meter-current').value) || 0;
+        const consumption = current - previous;
+        
+        const display = document.getElementById('consumption-display');
+        if (display) {
+            display.textContent = consumption.toFixed(2);
+            if (consumption < 0) {
+                display.style.color = 'red';
+            } else {
+                display.style.color = 'green';
+            }
         }
     }
 }
