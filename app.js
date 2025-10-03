@@ -137,25 +137,61 @@ class ElectricitySubscriptionApp {
             // محاولة فتح النافذة مباشرة
             const modal = document.getElementById('invoice-modal');
             if (modal) {
-                // تعيين القيم الافتراضية
-                const currentDate = new Date();
-                const currentMonth = currentDate.getFullYear() + '-' + 
-                    String(currentDate.getMonth() + 1).padStart(2, '0');
-                document.getElementById('invoice-period').value = currentMonth;
-                document.getElementById('exchange-rate-override').value = this.settings.exchangeRate || 90000;
+                // التحقق من وجود العناصر قبل تعيين القيم
+                const periodInput = document.getElementById('invoice-period');
+                const exchangeInput = document.getElementById('exchange-rate-override');
+                const customerSelect = document.getElementById('invoice-customer');
+                
+                console.log('Elements found:', {
+                    period: !!periodInput,
+                    exchange: !!exchangeInput,
+                    customer: !!customerSelect
+                });
+                
+                // تعيين القيم الافتراضية إذا كانت العناصر موجودة
+                if (periodInput) {
+                    const currentDate = new Date();
+                    const currentMonth = currentDate.getFullYear() + '-' + 
+                        String(currentDate.getMonth() + 1).padStart(2, '0');
+                    periodInput.value = currentMonth;
+                }
+                
+                if (exchangeInput) {
+                    exchangeInput.value = this.settings.exchangeRate || 90000;
+                }
                 
                 // تحديث قائمة الزبائن
-                const customerSelect = document.getElementById('invoice-customer');
-                customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
-                this.customers.filter(c => c.status === 'active').forEach(customer => {
-                    const option = document.createElement('option');
-                    option.value = customer.id;
-                    option.textContent = customer.name;
-                    customerSelect.appendChild(option);
-                });
+                if (customerSelect) {
+                    customerSelect.innerHTML = '<option value="">اختر الزبون</option>';
+                    this.customers.filter(c => c.status === 'active').forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.id;
+                        option.textContent = customer.name;
+                        customerSelect.appendChild(option);
+                    });
+                }
                 
                 modal.classList.add('active');
                 console.log('Modal opened directly with default values');
+                
+                // تأخير صغير لضمان ظهور النافذة قبل تعيين القيم
+                setTimeout(() => {
+                    const periodInput = document.getElementById('invoice-period');
+                    const exchangeInput = document.getElementById('exchange-rate-override');
+                    
+                    if (periodInput && !periodInput.value) {
+                        const currentDate = new Date();
+                        const currentMonth = currentDate.getFullYear() + '-' + 
+                            String(currentDate.getMonth() + 1).padStart(2, '0');
+                        periodInput.value = currentMonth;
+                        console.log('Period set to:', currentMonth);
+                    }
+                    
+                    if (exchangeInput && !exchangeInput.value) {
+                        exchangeInput.value = this.settings.exchangeRate || 90000;
+                        console.log('Exchange rate set to:', this.settings.exchangeRate || 90000);
+                    }
+                }, 100);
             } else {
                 console.error('Invoice modal not found');
                 this.showToast('خطأ في تحميل نافذة الفاتورة', 'error');
