@@ -967,23 +967,50 @@ class ElectricitySubscriptionApp {
                 return;
             }
 
-            // جمع البيانات
+            // التحقق من وجود العناصر قبل قراءة القيم
+            const customerElement = document.getElementById('invoice-customer');
+            const periodElement = document.getElementById('invoice-period');
+            const meterPreviousElement = document.getElementById('meter-previous');
+            const meterCurrentElement = document.getElementById('meter-current');
+            const consumptionElement = document.getElementById('consumption-display');
+            const pricePerKwhElement = document.getElementById('price-per-kwh');
+            const monthlySubscriptionElement = document.getElementById('monthly-subscription');
+            const additionalPaymentsElement = document.getElementById('additional-payments');
+            const additionalPaymentsNoteElement = document.getElementById('additional-payments-note');
+            const discountElement = document.getElementById('discount');
+            const discountNoteElement = document.getElementById('discount-note');
+            const exchangeRateElement = document.getElementById('exchange-rate-override');
+
+            console.log('Elements found:', {
+                customer: !!customerElement,
+                period: !!periodElement,
+                meterPrevious: !!meterPreviousElement,
+                meterCurrent: !!meterCurrentElement,
+                consumption: !!consumptionElement,
+                pricePerKwh: !!pricePerKwhElement,
+                monthlySubscription: !!monthlySubscriptionElement,
+                additionalPayments: !!additionalPaymentsElement,
+                discount: !!discountElement,
+                exchangeRate: !!exchangeRateElement
+            });
+
+            // جمع البيانات مع التحقق من وجود العناصر
             const invoiceData = {
-                customerId: document.getElementById('invoice-customer').value,
-                period: document.getElementById('invoice-period').value,
-                meterPrevious: parseFloat(document.getElementById('meter-previous').value) || 0,
-                meterCurrent: parseFloat(document.getElementById('meter-current').value) || 0,
-                consumption: parseFloat(document.getElementById('consumption-display').textContent) || 0,
-                pricePerKwh: parseFloat(document.getElementById('price-per-kwh').value) || 0,
-                monthlySubscription: parseFloat(document.getElementById('monthly-subscription').value) || 0,
-                additionalPayments: parseFloat(document.getElementById('additional-payments').value) || 0,
-                additionalPaymentsNote: document.getElementById('additional-payments-note').value,
-                discount: parseFloat(document.getElementById('discount').value) || 0,
-                discountNote: document.getElementById('discount-note').value,
-                exchangeRate: parseFloat(document.getElementById('exchange-rate-override').value) || 90000,
+                customerId: customerElement ? customerElement.value : '',
+                period: periodElement ? periodElement.value : '',
+                meterPrevious: parseFloat(meterPreviousElement ? meterPreviousElement.value : 0) || 0,
+                meterCurrent: parseFloat(meterCurrentElement ? meterCurrentElement.value : 0) || 0,
+                consumption: parseFloat(consumptionElement ? consumptionElement.textContent : 0) || 0,
+                pricePerKwh: parseFloat(pricePerKwhElement ? pricePerKwhElement.value : 0) || 0,
+                monthlySubscription: parseFloat(monthlySubscriptionElement ? monthlySubscriptionElement.value : 0) || 0,
+                additionalPayments: parseFloat(additionalPaymentsElement ? additionalPaymentsElement.value : 0) || 0,
+                additionalPaymentsNote: additionalPaymentsNoteElement ? additionalPaymentsNoteElement.value : '',
+                discount: parseFloat(discountElement ? discountElement.value : 0) || 0,
+                discountNote: discountNoteElement ? discountNoteElement.value : '',
+                exchangeRate: parseFloat(exchangeRateElement ? exchangeRateElement.value : 90000) || 90000,
                 currencyMode: this.settings.defaultCurrencyMode || 'USD',
                 issuedAt: new Date().toISOString(),
-                createdBy: this.currentUser.uid
+                createdBy: this.currentUser ? this.currentUser.uid : 'admin'
             };
 
             // التحقق من البيانات المطلوبة
@@ -1018,7 +1045,7 @@ class ElectricitySubscriptionApp {
 
         } catch (error) {
             console.error('خطأ في حفظ الفاتورة:', error);
-            this.showToast('خطأ في حفظ الفاتورة', 'error');
+            this.showToast('خطأ في حفظ الفاتورة: ' + error.message, 'error');
         }
     }
 }
